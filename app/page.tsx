@@ -26,6 +26,8 @@ function BusTicket() {
 
   const [ticketNumber, setTicketNumber] = useState<number | null>(null);
   const [expiresAt, setExpiresAt] = useState<string | null>(null);
+  const [isActive, setIsActive] = useState(false);
+  const [loadingStatus, setLoadingStatus] = useState(true);
 
   useEffect(() => {
     const today = new Date().toISOString().split("T")[0];
@@ -54,6 +56,27 @@ function BusTicket() {
         setExpiresAt(null);
       }
     }
+  }, [stop]);
+
+  useEffect(() => {
+    async function fetchBusStatus() {
+      const { data, error } = await supabase
+        .from("bus_status")
+        .select("active")
+        .eq("stop", stop)
+        .single();
+
+      if (error) {
+        console.error("Fehler beim Laden des Busstatus:", error);
+        setLoadingStatus(false);
+        return;
+      }
+
+      setIsActive(data.active);
+      setLoadingStatus(false);
+    }
+
+    fetchBusStatus();
   }, [stop]);
 
   async function getTicket() {
@@ -132,6 +155,10 @@ function BusTicket() {
     );
   }
 
+  if (loadingStatus) {
+    return <div>Lade BusCards...</div>;
+  }
+
   return (
     <main
       style={{
@@ -164,7 +191,17 @@ function BusTicket() {
           {stopName}
         </p>
 
-        {ticketNumber === null ? (
+        {!isActive ? (
+          <>
+            <h1 style={{ fontSize: "28px" }}>
+              Nummernvergabe noch nicht gestartet
+            </h1>
+
+            <p style={{ marginTop: "16px" }}>
+              Bitte warten Sie auf die Busaufsicht.
+            </p>
+          </>
+        ) : ticketNumber === null ? (
           <>
             <h1 style={{ fontSize: "32px" }}>Buskarte anfordern</h1>
 
