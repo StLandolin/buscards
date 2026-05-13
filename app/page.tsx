@@ -103,7 +103,7 @@ function BusTicket() {
         : 1;
 
     const expiresDate = new Date();
-    expiresDate.setMinutes(expiresDate.getMinutes() + 1);
+    expiresDate.setMinutes(expiresDate.getMinutes() + 20);
 
     const { error: insertError } = await supabase.from("tickets").insert([
       {
