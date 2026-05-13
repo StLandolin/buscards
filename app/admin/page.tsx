@@ -25,6 +25,10 @@ const stops: Record<string, string> = {
 
 export default function AdminPage() {
   const [statuses, setStatuses] = useState<BusStatus[]>([]);
+  const [authorized, setAuthorized] = useState(false);
+  const [password, setPassword] = useState("");
+
+  const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
   async function loadStatuses() {
     const { data, error } = await supabase
@@ -60,8 +64,89 @@ export default function AdminPage() {
   }
 
   useEffect(() => {
-    loadStatuses();
+    const savedAuth = localStorage.getItem("buscards-admin-auth");
+
+    if (savedAuth === "true") {
+      setAuthorized(true);
+      loadStatuses();
+    }
   }, []);
+
+  function handleLogin() {
+    if (password === adminPassword) {
+      localStorage.setItem("buscards-admin-auth", "true");
+      setAuthorized(true);
+      loadStatuses();
+    } else {
+      alert("Falsches Passwort");
+    }
+  }
+
+  if (!authorized) {
+    return (
+      <main
+        style={{
+          minHeight: "100vh",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          fontFamily: "Arial, sans-serif",
+          background: "#f3f6f8",
+          padding: "24px",
+        }}
+      >
+        <div
+          style={{
+            background: "white",
+            borderRadius: "24px",
+            padding: "32px",
+            width: "100%",
+            maxWidth: "420px",
+            boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+            textAlign: "center",
+          }}
+        >
+          <h1>BusCards Admin</h1>
+
+          <p style={{ color: "#667085" }}>
+            Bitte Passwort eingeben.
+          </p>
+
+          <input
+            type="password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)}
+            placeholder="Passwort"
+            style={{
+              marginTop: "16px",
+              width: "100%",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "1px solid #d0d5dd",
+              fontSize: "16px",
+            }}
+          />
+
+          <button
+            onClick={handleLogin}
+            style={{
+              marginTop: "20px",
+              width: "100%",
+              padding: "14px",
+              borderRadius: "12px",
+              border: "none",
+              background: "#1f2933",
+              color: "white",
+              fontSize: "16px",
+              cursor: "pointer",
+            }}
+          >
+            Anmelden
+          </button>
+        </div>
+      </main>
+    );
+  }
 
   return (
     <main
