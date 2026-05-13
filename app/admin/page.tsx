@@ -8,6 +8,21 @@ type BusStatus = {
   active: boolean;
 };
 
+const stops: Record<string, string> = {
+  "1": "Rist: Wyhl",
+  "2": "SWEG: Wallburg – Schmieheim – Kippenheim – Sulz – Lahr",
+  "3": "SWEG: Mahlberg – Kippenheimweiler – Langenwinkel",
+  "4": "SWEG: Ringsheim – Rust",
+  "5":
+    "SBG: Ringsheim – Herbolzheim – Kenzingen – Hecklingen – Malterdingen – Heimbach – Köndringen – Teningen / SWEG: Altdorf – Orschweier – Mahlberg – Kippenheim – Mietersheim – Lahr",
+  "6":
+    "SWEG: Grafenhausen – Kappel / Rist: Broggingen – Bleichheim – Tutschfelden – Wagenstadt – Nordweil – Bombach",
+  "7": "Oestreicher: Bleichheim – Kirnhalden – Freiamt",
+  "8": "Rist: Niederhausen – Oberhausen – Weisweil",
+  "9":
+    "SWEG: Altdorf – Orschweier Bahnhof – Grafenhausen / SWEG: Ettenheimweiler – Münchweier – Ettenheimmünster",
+};
+
 export default function AdminPage() {
   const [statuses, setStatuses] = useState<BusStatus[]>([]);
 
@@ -29,7 +44,10 @@ export default function AdminPage() {
   async function toggleStop(stop: string, active: boolean) {
     const { error } = await supabase
       .from("bus_status")
-      .update({ active: !active, updated_at: new Date().toISOString() })
+      .update({
+        active: !active,
+        updated_at: new Date().toISOString(),
+      })
       .eq("stop", stop);
 
     if (error) {
@@ -70,10 +88,17 @@ export default function AdminPage() {
         </h1>
 
         <p style={{ color: "#667085" }}>
-          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt werden.
+          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt
+          werden.
         </p>
 
-        <div style={{ marginTop: "24px", display: "grid", gap: "12px" }}>
+        <div
+          style={{
+            marginTop: "24px",
+            display: "grid",
+            gap: "12px",
+          }}
+        >
           {statuses.map((item) => (
             <div
               key={item.stop}
@@ -84,11 +109,29 @@ export default function AdminPage() {
                 border: "1px solid #e5e7eb",
                 borderRadius: "16px",
                 padding: "16px",
+                gap: "16px",
               }}
             >
               <div>
                 <strong>Haltestelle {item.stop}</strong>
-                <div style={{ fontSize: "14px", color: "#667085" }}>
+
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "#667085",
+                    marginTop: "4px",
+                  }}
+                >
+                  {stops[item.stop]}
+                </div>
+
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "#667085",
+                    marginTop: "8px",
+                  }}
+                >
                   Status: {item.active ? "aktiv" : "inaktiv"}
                 </div>
               </div>
@@ -103,6 +146,7 @@ export default function AdminPage() {
                   background: item.active ? "#991b1b" : "#166534",
                   color: "white",
                   cursor: "pointer",
+                  minWidth: "100px",
                 }}
               >
                 {item.active ? "STOP" : "START"}
