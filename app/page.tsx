@@ -1,7 +1,7 @@
 "use client";
 
 import { useSearchParams } from "next/navigation";
-import { useEffect, useState } from "react";
+import { Suspense, useEffect, useState } from "react";
 import { supabase } from "./lib/supabaseClient";
 
 const stops: Record<string, string> = {
@@ -19,7 +19,7 @@ const stops: Record<string, string> = {
     "SWEG: Altdorf – Orschweier Bahnhof – Grafenhausen / SWEG: Ettenheimweiler – Münchweier – Ettenheimmünster",
 };
 
-export default function Home() {
+function BusTicket() {
   const searchParams = useSearchParams();
   const stop = searchParams.get("stop") || "unbekannt";
   const stopName = stops[stop] || "Unbekannte Haltestelle";
@@ -92,10 +92,10 @@ export default function Home() {
       .limit(1);
 
     if (fetchError) {
-  console.error("Supabase fetchError:", JSON.stringify(fetchError, null, 2));
-  alert(fetchError.message || "Unbekannter Supabase-Fehler");
-  return;
-}
+      console.error("Supabase fetchError:", JSON.stringify(fetchError, null, 2));
+      alert(fetchError.message || "Unbekannter Supabase-Fehler");
+      return;
+    }
 
     const nextNumber =
       lastTicket && lastTicket.length > 0
@@ -115,7 +115,8 @@ export default function Home() {
     ]);
 
     if (insertError) {
-      console.error(insertError);
+      console.error("Supabase insertError:", JSON.stringify(insertError, null, 2));
+      alert(insertError.message || "Fehler beim Speichern des Tickets");
       return;
     }
 
@@ -189,9 +190,7 @@ export default function Home() {
               Deine Nummer
             </p>
 
-            <h1 style={{ fontSize: "96px", margin: "0" }}>
-              {ticketNumber}
-            </h1>
+            <h1 style={{ fontSize: "96px", margin: "0" }}>{ticketNumber}</h1>
 
             {expiresAt && (
               <p style={{ fontSize: "18px", marginTop: "16px" }}>
@@ -206,5 +205,13 @@ export default function Home() {
         )}
       </div>
     </main>
+  );
+}
+
+export default function Home() {
+  return (
+    <Suspense fallback={<div>Lade BusCards...</div>}>
+      <BusTicket />
+    </Suspense>
   );
 }
