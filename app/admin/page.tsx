@@ -6,6 +6,8 @@ import { supabase } from "../lib/supabaseClient";
 type BusStatus = {
   stop: string;
   active: boolean;
+  lastNumber: number;
+  activeTickets: number;
 };
 
 const stops: Record<string, string> = {
@@ -31,18 +33,47 @@ export default function AdminPage() {
   const adminPassword = process.env.NEXT_PUBLIC_ADMIN_PASSWORD;
 
   async function loadStatuses() {
-    const { data, error } = await supabase
+    const today = new Date().toISOString().split("T")[0];
+    const now = new Date().toISOString();
+
+    const { data: statusData, error: statusError } = await supabase
       .from("bus_status")
       .select("stop, active")
       .order("stop", { ascending: true });
 
-    if (error) {
-      console.error(error);
+    if (statusError) {
+      console.error(statusError);
       alert("Fehler beim Laden des Status");
       return;
     }
 
-    setStatuses(data || []);
+    const enrichedStatuses = await Promise.all(
+      (statusData || []).map(async (item) => {
+        const { data: lastTicket } = await supabase
+          .from("tickets")
+          .select("ticket_number")
+          .eq("stop", item.stop)
+          .eq("ticket_date", today)
+          .order("ticket_number", { ascending: false })
+          .limit(1);
+
+        const { count } = await supabase
+          .from("tickets")
+          .select("*", { count: "exact", head: true })
+          .eq("stop", item.stop)
+          .eq("ticket_date", today)
+          .gt("expires_at", now);
+
+        return {
+          stop: item.stop,
+          active: item.active,
+          lastNumber: lastTicket && lastTicket.length > 0 ? lastTicket[0].ticket_number : 0,
+          activeTickets: count || 0,
+        };
+      })
+    );
+
+    setStatuses(enrichedStatuses);
   }
 
   async function toggleStop(stop: string, active: boolean) {
@@ -71,6 +102,16 @@ export default function AdminPage() {
       loadStatuses();
     }
   }, []);
+
+  useEffect(() => {
+    if (!authorized) return;
+
+    const interval = setInterval(() => {
+      loadStatuses();
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, [authorized]);
 
   function handleLogin() {
     if (password === adminPassword) {
@@ -108,9 +149,7 @@ export default function AdminPage() {
         >
           <h1>BusCards Admin</h1>
 
-          <p style={{ color: "#667085" }}>
-            Bitte Passwort eingeben.
-          </p>
+          <p style={{ color: "#667085" }}>Bitte Passwort eingeben.</p>
 
           <input
             type="password"
@@ -160,7 +199,7 @@ export default function AdminPage() {
     >
       <div
         style={{
-          maxWidth: "720px",
+          maxWidth: "760px",
           margin: "0 auto",
           background: "white",
           borderRadius: "24px",
@@ -168,22 +207,27 @@ export default function AdminPage() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
         }}
       >
-        <h1 style={{ fontSize: "32px", marginTop: 0 }}>
-          BusCards Dashboard
-        </h1>
+        <h1 style={{ fontSize: "32px", marginTop: 0 }}>BusCards Dashboard</h1>
 
         <p style={{ color: "#667085" }}>
-          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt
-          werden.
+          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt werden.
         </p>
 
-        <div
+        <button
+          onClick={loadStatuses}
           style={{
-            marginTop: "24px",
-            display: "grid",
-            gap: "12px",
+            marginTop: "12px",
+            padding: "10px 16px",
+            borderRadius: "12px",
+            border: "1px solid #d0d5dd",
+            background: "white",
+            cursor: "pointer",
           }}
         >
+          Aktualisieren
+        </button>
+
+        <div style={{ marginTop: "24px", display: "grid", gap: "12px" }}>
           {statuses.map((item) => (
             <div
               key={item.stop}
@@ -200,24 +244,20 @@ export default function AdminPage() {
               <div>
                 <strong>Haltestelle {item.stop}</strong>
 
-                <div
-                  style={{
-                    fontSize: "14px",
-                    color: "#667085",
-                    marginTop: "4px",
-                  }}
-                >
+                <div style={{ fontSize: "14px", color: "#667085", marginTop: "4px" }}>
                   {stops[item.stop]}
                 </div>
 
-                <div
-                  style={{
-                    fontSize: "14px",
-                    color: "#667085",
-                    marginTop: "8px",
-                  }}
-                >
+                <div style={{ fontSize: "14px", color: "#667085", marginTop: "8px" }}>
                   Status: {item.active ? "aktiv" : "inaktiv"}
+                </div>
+
+                <div style={{ fontSize: "14px", marginTop: "8px" }}>
+                  Letzte Nummer: <strong>{item.lastNumber || "–"}</strong>
+                </div>
+
+                <div style={{ fontSize: "14px", marginTop: "4px" }}>
+                  Aktive Tickets: <strong>{item.activeTickets}</strong>
                 </div>
               </div>
 
