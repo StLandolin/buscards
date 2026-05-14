@@ -67,7 +67,10 @@ export default function AdminPage() {
         return {
           stop: item.stop,
           active: item.active,
-          lastNumber: lastTicket && lastTicket.length > 0 ? lastTicket[0].ticket_number : 0,
+          lastNumber:
+            lastTicket && lastTicket.length > 0
+              ? lastTicket[0].ticket_number
+              : 0,
           activeTickets: count || 0,
         };
       })
@@ -155,6 +158,9 @@ export default function AdminPage() {
             type="password"
             value={password}
             onChange={(e) => setPassword(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") handleLogin();
+            }}
             placeholder="Passwort"
             style={{
               marginTop: "16px",
@@ -210,7 +216,8 @@ export default function AdminPage() {
         <h1 style={{ fontSize: "32px", marginTop: 0 }}>BusCards Dashboard</h1>
 
         <p style={{ color: "#667085" }}>
-          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt werden.
+          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt
+          werden.
         </p>
 
         <button
@@ -244,11 +251,23 @@ export default function AdminPage() {
               <div>
                 <strong>Haltestelle {item.stop}</strong>
 
-                <div style={{ fontSize: "14px", color: "#667085", marginTop: "4px" }}>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "#667085",
+                    marginTop: "4px",
+                  }}
+                >
                   {stops[item.stop]}
                 </div>
 
-                <div style={{ fontSize: "14px", color: "#667085", marginTop: "8px" }}>
+                <div
+                  style={{
+                    fontSize: "14px",
+                    color: "#667085",
+                    marginTop: "8px",
+                  }}
+                >
                   Status: {item.active ? "aktiv" : "inaktiv"}
                 </div>
 
