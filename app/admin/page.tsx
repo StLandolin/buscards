@@ -235,7 +235,7 @@ export default function AdminPage() {
     src="/logo-landolin.webp"
     alt="St. Landolin Schule Ettenheim"
     style={{
-      width: "72px",
+      width: "90px",
       maxWidth: "25%",
       objectFit: "contain",
       flexShrink: 0,
