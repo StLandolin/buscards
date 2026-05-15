@@ -174,18 +174,33 @@ function BusTicket() {
       }}
     >
       <div
-        style={{
-          background: "white",
-          borderRadius: "24px",
-          padding: "32px",
-          maxWidth: "420px",
-          width: "100%",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-        }}
-      >
-        <p style={{ fontSize: "20px", marginBottom: "8px" }}>
-          Haltestelle {stop}
-        </p>
+  style={{
+    position: "relative",
+    background: "white",
+    borderRadius: "24px",
+    background: "white",
+    borderRadius: "24px",
+    padding: "32px",
+    maxWidth: "420px",
+    width: "100%",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
+  }}
+>
+  <img
+  src="/logo-landolin.webp"
+  alt="St. Landolin Schule Ettenheim"
+  style={{
+    position: "absolute",
+    top: "20px",
+    right: "20px",
+    width: "90px",
+    opacity: 0.9,
+  }}
+/>
+
+  <p style={{ fontSize: "20px", marginBottom: "8px" }}>
+    Haltestelle {stop}
+  </p>
 
         <p style={{ fontSize: "16px", color: "#667085", marginTop: "0" }}>
           {stopName}

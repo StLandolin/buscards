@@ -205,6 +205,7 @@ export default function AdminPage() {
     >
       <div
         style={{
+          position: "relative",
           maxWidth: "760px",
           margin: "0 auto",
           background: "white",
@@ -213,6 +214,17 @@ export default function AdminPage() {
           boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
         }}
       >
+        <img
+  src="/logo-landolin.webp"
+  alt="St. Landolin Schule Ettenheim"
+  style={{
+    position: "absolute",
+    top: "24px",
+    right: "24px",
+    width: "120px",
+    opacity: 0.9,
+  }}
+/>
         <h1 style={{ fontSize: "32px", marginTop: 0 }}>BusCards Dashboard</h1>
 
         <p style={{ color: "#667085" }}>
