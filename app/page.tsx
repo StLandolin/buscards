@@ -178,8 +178,6 @@ function BusTicket() {
     position: "relative",
     background: "white",
     borderRadius: "24px",
-    background: "white",
-    borderRadius: "24px",
     padding: "32px",
     maxWidth: "420px",
     width: "100%",
