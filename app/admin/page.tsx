@@ -203,34 +203,45 @@ export default function AdminPage() {
         padding: "24px",
       }}
     >
-      <div
-        style={{
-          position: "relative",
-          maxWidth: "760px",
-          margin: "0 auto",
-          background: "white",
-          borderRadius: "24px",
-          padding: "24px",
-          boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
-        }}
-      >
-        <img
-  src="/logo-landolin.webp"
-  alt="St. Landolin Schule Ettenheim"
+        <div
   style={{
-    position: "absolute",
-    top: "24px",
-    right: "24px",
-    width: "120px",
-    opacity: 0.9,
+    maxWidth: "760px",
+    margin: "0 auto",
+    background: "white",
+    borderRadius: "24px",
+    padding: "24px",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.08)",
   }}
-/>
-        <h1 style={{ fontSize: "32px", marginTop: 0 }}>BusCards Dashboard</h1>
+>
+      <div
+  style={{
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "flex-start",
+    gap: "16px",
+  }}
+>
+  <div>
+    <h1 style={{ fontSize: "32px", marginTop: 0, marginBottom: "12px" }}>
+      BusCards Dashboard
+    </h1>
 
-        <p style={{ color: "#667085" }}>
-          Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt
-          werden.
-        </p>
+    <p style={{ color: "#667085", marginTop: 0 }}>
+      Hier kann die Nummernvergabe pro Haltestelle gestartet oder gestoppt werden.
+    </p>
+  </div>
+
+  <img
+    src="/logo-landolin.webp"
+    alt="St. Landolin Schule Ettenheim"
+    style={{
+      width: "72px",
+      maxWidth: "25%",
+      objectFit: "contain",
+      flexShrink: 0,
+    }}
+  />
+</div>
 
         <button
           onClick={loadStatuses}
