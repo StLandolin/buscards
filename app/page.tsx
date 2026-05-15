@@ -59,25 +59,37 @@ function BusTicket() {
   }, [stop]);
 
   useEffect(() => {
-    async function fetchBusStatus() {
-      const { data, error } = await supabase
-        .from("bus_status")
-        .select("active")
-        .eq("stop", stop)
-        .single();
+  async function fetchBusStatus() {
+    const { data, error } = await supabase
+      .from("bus_status")
+      .select("active")
+      .eq("stop", stop)
+      .single();
 
-      if (error) {
-        console.error("Fehler beim Laden des Busstatus:", error);
-        setLoadingStatus(false);
-        return;
-      }
-
-      setIsActive(data.active);
+    if (error) {
+      console.error("Fehler beim Laden des Busstatus:", error);
       setLoadingStatus(false);
+      return;
     }
 
-    fetchBusStatus();
-  }, [stop]);
+    const now = new Date();
+
+    const currentHour = now.getHours();
+    const currentMinute = now.getMinutes();
+
+    const currentTime = currentHour * 60 + currentMinute;
+
+    const autoActive =
+      currentTime >= 12 * 60 + 45 &&
+      currentTime <= 13 * 60 + 30;
+
+    setIsActive(data.active || autoActive);
+
+    setLoadingStatus(false);
+  }
+
+  fetchBusStatus();
+}, [stop]);
 
   async function getTicket() {
     const today = new Date().toISOString().split("T")[0];
